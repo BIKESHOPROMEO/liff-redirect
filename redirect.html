@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>予約フォームにリダイレクト</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+  <p>LINE表示名取得中…??</p>
+
+  <script>
+    // LIFF初期化＆表示名取得
+    window.onload = function () {
+      liff.init({ liffId: "あなたのLIFF IDをここに" }).then(() => {
+        return liff.getProfile();
+      }).then(profile => {
+        const displayName = encodeURIComponent(profile.displayName);
+
+        // GoogleフォームのURLに表示名を埋め込む
+        const redirectUrl = "https://docs.google.com/forms/d/e/1FAIpQLScYI0E_FOFE5JbEKG3Ir56cWBN2PLJ2AQmnQ_Uu33MhRgMs_g/viewform?usp=pp_url"
+                          + `&entry.2138944455=${displayName}`;
+
+        // フォームにリダイレクト
+        window.location.href = redirectUrl;
+      }).catch(err => {
+        document.body.innerHTML = "<p>表示名の取得に失敗しました??</p>";
+        console.error("LIFF error:", err);
+      });
+    };
+  </script>
+</body>
+</html>
