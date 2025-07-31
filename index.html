@@ -1,27 +1,44 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>予約フォームにリダイレクト</title>
+  <meta charset="UTF-8" />
+  <title>LINE予約フォーム中継</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
-  <p>LINE表示名取得中…??</p>
+  <h1 style="text-align: center;">読み込み中...</h1>
 
   <script>
-    window.onload = function () {
-      liff.init({ liffId: "2007826137-3dr2qGrl" }).then(() => {
-        return liff.getProfile();
-      }).then(profile => {
-        const displayName = encodeURIComponent(profile.displayName);
-        const redirectUrl = "https://docs.google.com/forms/d/e/1FAIpQLScYI0E_FOFE5JbEKG3Ir56cWBN2PLJ2AQmnQ_Uu33MhRgMs_g/viewform?usp=pp_url"
-                          + `&entry.2138944455=${displayName}`;
-        window.location.href = redirectUrl;
-      }).catch(err => {
-        document.body.innerHTML = "<p>表示名の取得に失敗しました??</p>";
-        console.error("LIFF error:", err);
-      });
-    };
+    async function main() {
+      try {
+        // LIFF初期化（外部ブラウザ対応付き）
+        await liff.init({
+          liffId: "2007826137-3dr2q6rl",
+          withLoginOnExternalBrowser: true
+        });
+
+        // LINEログインしていない場合はログイン処理へ
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+
+        // displayName取得
+        const profile = await liff.getProfile();
+        const name = encodeURIComponent(profile.displayName);
+
+        // Prefill用フォームURL（entry.xxxxxx は GoogleフォームのフィールドIDに合わせてください）
+        const formURL = `https://docs.google.com/forms/d/e/あなたのGoogleフォームID/viewform?usp=pp_url&entry.xxxxxx=${name}`;
+
+        // リダイレクト
+        location.href = formURL;
+      } catch (error) {
+        document.body.innerHTML = `<h1 style="text-align:center;">エラーが発生しました</h1><pre>${error}</pre>`;
+        console.error("LIFF初期化・表示名取得エラー:", error);
+      }
+    }
+
+    main();
   </script>
 </body>
 </html>
