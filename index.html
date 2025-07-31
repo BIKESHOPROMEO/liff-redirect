@@ -1,44 +1,30 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <title>LINE予約フォーム中継</title>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-</head>
-<body>
-  <h1 style="text-align: center;">読み込み中...</h1>
+<script>
+  async function main() {
+    try {
+      await liff.init({
+        liffId: "2007826137-3dr2q6rl",
+        withLoginOnExternalBrowser: true
+      });
 
-  <script>
-    async function main() {
-      try {
-        // LIFF初期化（外部ブラウザ対応付き）
-        await liff.init({
-          liffId: "2007826137-3dr2q6rl",
-          withLoginOnExternalBrowser: true
-        });
-
-        // LINEログインしていない場合はログイン処理へ
-        if (!liff.isLoggedIn()) {
-          liff.login();
-          return;
-        }
-
-        // displayName取得
-        const profile = await liff.getProfile();
-        const name = encodeURIComponent(profile.displayName);
-
-        // Prefill用フォームURL（entry.xxxxxx は GoogleフォームのフィールドIDに合わせてください）
-        const formURL = `https://docs.google.com/forms/d/e/あなたのGoogleフォームID/viewform?usp=pp_url&entry.xxxxxx=${name}`;
-
-        // リダイレクト
-        location.href = formURL;
-      } catch (error) {
-        document.body.innerHTML = `<h1 style="text-align:center;">エラーが発生しました</h1><pre>${error}</pre>`;
-        console.error("LIFF初期化・表示名取得エラー:", error);
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
       }
-    }
 
-    main();
-  </script>
-</body>
-</html>
+      const profile = await liff.getProfile();
+      const name = encodeURIComponent(profile.displayName);
+
+      const formURL = `https://docs.google.com/forms/d/e/あなたのフォームID/viewform?usp=pp_url&entry.xxxxxx=${name}`;
+      location.href = formURL;
+
+    } catch (error) {
+      document.body.innerHTML = `
+        <h1 style="text-align:center;">エラーが発生しました</h1>
+        <pre style="white-space: pre-wrap;">${error.message || error}</pre>
+      `;
+      console.error("LIFF初期化またはプロフィール取得時のエラー:", error);
+    }
+  }
+
+  main();
+</script>
